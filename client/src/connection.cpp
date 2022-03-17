@@ -5,7 +5,9 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
+#include <functional>
 #include <stdexcept>
+#include <iostream>
 
 Connection::Connection(int SV_PORT , const char* SV_IP)
 {
@@ -16,7 +18,7 @@ Connection::Connection(int SV_PORT , const char* SV_IP)
 
     if(sock_id < 0)
     {
-        throw std::runtime_error("Socket creation failed \n");
+       // throw std::runtime_error("Socket creation failed \n");
     }
 
     serv_addr.sin_family = AF_INET;
@@ -24,13 +26,36 @@ Connection::Connection(int SV_PORT , const char* SV_IP)
 
     if(inet_pton(AF_INET , SV_IP , &serv_addr.sin_addr) <= 0)
     {
-        throw std::runtime_error("Invalid IP address \n");
+        //throw std::runtime_error("Invalid IP address \n");
     }
 
     if(connect(sock_id , (struct sockaddr*)&serv_addr , sizeof(serv_addr)) < 0)
     {
-        throw std::runtime_error("Connection failed \n");
+        //throw std::runtime_error("Connection failed \n");
     }
+    
 
+}
+
+
+void Connection::sendMessage(message m)
+{
+    //get size
+    int size = m.get_size();
+
+    unsigned char bytes[4];
+    bytes[0] = (size >> 24) && 0xFF;
+    bytes[1] = (size >> 16) && 0xFF;
+    bytes[2] = (size >> 8) && 0xFF;
+    bytes[3] = size && 0xFF;
+
+    std::string send_data = bytes[0] + bytes[1] + bytes[2] + bytes[3] + m.data;
+    send(sock_id , send_data.c_str() , size + 4 , 0);
+}
+
+void Connection::getMessages()
+{
+    int size = recv(sock_id , buffer , sizeof(buffer) , MSG_DONTWAIT);
+    std::cout << "size: " << size <<"\n";
 
 }
