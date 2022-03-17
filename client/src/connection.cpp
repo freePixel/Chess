@@ -55,7 +55,17 @@ void Connection::sendMessage(message m)
 
 void Connection::getMessages()
 {
-    int size = recv(sock_id , buffer , sizeof(buffer) , MSG_DONTWAIT);
-    std::cout << "size: " << size <<"\n";
+    
 
+}
+
+void Connection::run()
+{
+    char buffer[512];
+    while(true)
+    {
+        int size = recv(sock_id , buffer , sizeof(buffer) , NULL);
+        std::cout << size << " , " << buffer << "\n";
+    }
+    
 }

@@ -21,12 +21,11 @@ class Connection
 		
 		Connection(int DST_PORT , const char* DST_IP);
 		void sendMessage(message m);
-		
+		void run();
 		void getMessages();
 	private:
 		void listen();
 		int sock_id;
-		char buffer[512];
 		
 
 };
