@@ -8,7 +8,6 @@ int main(int argc , char* argv[])
 
     std::thread thread(&Connection::run , &conn);
 
-    std::cout << "hello world" << "\n";
 
     thread.join();
     

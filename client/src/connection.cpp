@@ -18,7 +18,7 @@ Connection::Connection(int SV_PORT , const char* SV_IP)
 
     if(sock_id < 0)
     {
-       // throw std::runtime_error("Socket creation failed \n");
+        throw std::runtime_error("Socket creation failed \n");
     }
 
     serv_addr.sin_family = AF_INET;
@@ -26,12 +26,12 @@ Connection::Connection(int SV_PORT , const char* SV_IP)
 
     if(inet_pton(AF_INET , SV_IP , &serv_addr.sin_addr) <= 0)
     {
-        //throw std::runtime_error("Invalid IP address \n");
+        throw std::runtime_error("Invalid IP address \n");
     }
 
     if(connect(sock_id , (struct sockaddr*)&serv_addr , sizeof(serv_addr)) < 0)
     {
-        //throw std::runtime_error("Connection failed \n");
+        throw std::runtime_error("Connection failed \n");
     }
     
 
@@ -61,11 +61,19 @@ void Connection::getMessages()
 
 void Connection::run()
 {
+    std::cout << "client is running " << "\n";
     char buffer[512];
     while(true)
     {
-        int size = recv(sock_id , buffer , sizeof(buffer) , NULL);
-        std::cout << size << " , " << buffer << "\n";
+        int size = recv(sock_id , buffer , sizeof(buffer) , 0);
+        if(size == 0)
+        {
+            std::cout << "Server disconnected (?) \n";
+            return;
+        }
+        else{
+            std::cout << buffer << "\n";
+        }
     }
     
 }

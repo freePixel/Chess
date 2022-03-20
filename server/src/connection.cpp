@@ -53,6 +53,8 @@ void Connection::getMessages()
 
 void Connection::run()
 {
+
+    std::cout << "Server is active, waiting for clients \n";
     int max_sd , sd , activity , new_socket;
     char buffer[512];
     while(true)
@@ -74,7 +76,7 @@ void Connection::run()
 
         activity = select(max_sd + 1 , &readfds , NULL , NULL , NULL);
 
-        if((activity > 0) && (errno != EINTR))
+        if((activity < 0) && (errno != EINTR))
         {
             throw std::runtime_error("Select error");
         }
@@ -88,6 +90,10 @@ void Connection::run()
         
 
             std::cout << "new connection " << "\n";
+
+            const char* hello = "{'message' : 'hello client!'}";
+            send(new_socket , hello , strlen(hello) , 0);
+
 
             for(int i=0;i<MAX_CLIENTS;i++)
             {
